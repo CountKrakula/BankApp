@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace BankApp
 {
-    internal class User
+    internal class UserManager
     {
+        // Global list of all users (Customers, Admins, SystemOwners).  
+        // Declared static so every class can access or modify the same shared collection.  
+        // Initialized immediately to ensure it’s ready for use when the program starts.
+        public static List<UserManager> UsersList = new List<UserManager>();
         public enum UserRole
         {
             Customer, 
             Admin, 
-            BankOwner
+            SystemOwner
         }
 
         public enum UserStatus
