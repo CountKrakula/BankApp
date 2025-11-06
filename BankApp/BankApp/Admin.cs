@@ -168,7 +168,9 @@ namespace BankApp
             }
             return null;
         }
-
+        // -------------------------------------------------------
+        // Change Currency Rates
+        // -------------------------------------------------------
         public void ChangeCurrencyRates() // Update exchange rates
         {
             Console.WriteLine("Change currency rate");
@@ -220,6 +222,13 @@ namespace BankApp
                 Console.WriteLine($"{rate.Key.From} -> {rate.Key.To}: {rate.Value}");
             }
 
+        }
+        internal static List<Customer> GetAllCustomers()
+        {
+            return UsersList
+                .Where(u => u["Role"].ToString() == "Customer")
+                .Select(u => (Customer)u["UserObject"])
+                .ToList();
         }
 
     }

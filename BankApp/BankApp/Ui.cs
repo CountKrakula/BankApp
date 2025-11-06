@@ -78,6 +78,8 @@ namespace BankApp
         // ----------------------------------------------------------
         static void ShowCustomerMenu(Dictionary<string, object> user)
         {
+            new SystemOwner().ProcessPendingTransactions(GetAllCustomers());
+
             Customer cust = (Customer)user["UserObject"];
             bool loggedIn = true;
 
@@ -89,9 +91,10 @@ namespace BankApp
                 Console.WriteLine("2. Deposit Funds");
                 Console.WriteLine("3. Withdraw Funds");
                 Console.WriteLine("4. List Accounts");
-                Console.WriteLine("5. Create Loan");
-                Console.WriteLine("6. Transfer");
-                Console.WriteLine("7. Logout");
+                Console.WriteLine("5. Show transactions");
+                Console.WriteLine("6. Create Loan");
+                Console.WriteLine("7. Transfer");
+                Console.WriteLine("8. Logout");
                 Console.Write("Choose: ");
 
                 switch (Console.ReadLine())
@@ -101,23 +104,20 @@ namespace BankApp
                         cust.CreateAccount();
                         break;
                     case "2":
-                        Console.Write("Account number: ");
-                        string accNum = Console.ReadLine();
-                        Console.Write("Amount: ");
-                        decimal dep = Convert.ToDecimal(Console.ReadLine());
-                        cust.DepositFunds(accNum, dep);
+                        cust.DepositFunds();
                         break;
                     case "3":
-                        Console.Write("Account number: ");
-                        string accNum2 = Console.ReadLine();
-                        Console.Write("Amount: ");
-                        decimal wd = Convert.ToDecimal(Console.ReadLine());
-                        cust.WithdrawFunds(accNum2, wd);
+                        cust.WithdrawFunds();
                         break;
                     case "4":
+                        Console.Clear();
                         cust.ListAccounts();
                         break;
                     case "5":
+                        Console.Clear();
+                        cust.TransactionHistory();
+                        break;
+                    case "6":
                         Console.Write("Loan Id: ");
                         string loanId = Console.ReadLine();
                         Console.Write("Principal amount: ");
@@ -136,7 +136,7 @@ namespace BankApp
                     //-----------------
                     //Transfer balance
                     //-----------------
-                    case "6":
+                    case "7":
                         Console.WriteLine("Transfer Options:");
                         Console.WriteLine("1. Transfer between your own accounts");
                         Console.WriteLine("2. Transfer to another customer");
@@ -150,11 +150,7 @@ namespace BankApp
                             //Transfer own accounts
                             //---------------------
                             case "1":
-                                Console.Write("Amount: ");
-                                if (decimal.TryParse(Console.ReadLine(), out decimal ownAmount))
-                                    cust.TransferBetweenOwnAccounts(ownAmount);
-                                else
-                                    Console.WriteLine("Invalid amount.");
+                                cust.TransferBetweenOwnAccounts();
                                 break;
                             //-----------------
                             //Transfer to user
@@ -172,13 +168,8 @@ namespace BankApp
                                     break;
                                 }
 
-                                Customer targetCustomer = (Customer)targetUser["CustomerObject"];
-
-                                Console.Write("Amount: ");
-                                if (decimal.TryParse(Console.ReadLine(), out decimal sendAmount))
-                                    cust.TransferToOtherCustomer(targetCustomer, sendAmount);
-                                else
-                                    Console.WriteLine("Invalid amount.");
+                                Customer targetCustomer = (Customer)targetUser["UserObject"];
+                                cust.TransferToOtherCustomer(targetCustomer);  
                                 break;
 
                             default:
@@ -186,7 +177,7 @@ namespace BankApp
                                 break;
                         }
                         break;
-                    case "7":
+                    case "8":
                         loggedIn = false;
                         break;
                     default:
@@ -208,6 +199,8 @@ namespace BankApp
         static void ShowAdminMenu(Dictionary<string, object> user)
         {
             Admin admin = new Admin();
+            SystemOwner owner = new SystemOwner();
+
             bool loggedIn = true;
 
             while (loggedIn)
@@ -217,7 +210,9 @@ namespace BankApp
                 Console.WriteLine("1. Register New User");
                 Console.WriteLine("2. Show All Users");
                 Console.WriteLine("3. Change Currency Rates");
-                Console.WriteLine("4. Logout");
+                Console.WriteLine("4. Process Pending Transactions");
+                Console.WriteLine("5. Pending Trasaction Log");
+                Console.WriteLine("6. Logout");
                 Console.Write("Choose: ");
 
                 switch (Console.ReadLine())
@@ -225,15 +220,32 @@ namespace BankApp
                     case "1":
                         admin.RegisterUser();
                         break;
+
                     case "2":
                         admin.ShowAllUsers();
                         break;
+
                     case "3":
                         admin.ChangeCurrencyRates();
                         break;
+
                     case "4":
+                        //Run pending transactions immediately
+                        Console.WriteLine("\nProcessing pending transactions...");
+                        owner.ProcessPendingTransactions(Admin.GetAllCustomers());
+                        Console.WriteLine("All eligible transactions processed!");
+                        break;
+                    case "5":
+                        Console.WriteLine("=== Pending Transactions ===");
+                        if (SystemOwner.PendingTransactions.Count == 0)
+                            Console.WriteLine("(none)");
+                        else
+                            foreach (var t in SystemOwner.PendingTransactions) t.PrintTransaction();
+                        break;
+                    case "6":
                         loggedIn = false;
                         break;
+
                     default:
                         Console.WriteLine("Invalid choice.");
                         break;
