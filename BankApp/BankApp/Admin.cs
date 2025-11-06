@@ -29,13 +29,11 @@ namespace BankApp
             Console.Write("Input username: ");
             string username = Console.ReadLine();
 
-
             //Looks for the user in the list
             if (FindUser(username) != null)
             {
                 Console.WriteLine("Username already exist.");
                 return;
-
             }
 
             Console.Write("Input password: ");
@@ -57,22 +55,32 @@ namespace BankApp
                     role = UserRole.Admin;
                     break;
                 default:
-                    Console.WriteLine("Invalid role. choose C, A or S.");
+                    Console.WriteLine("Invalid role. choose C or A.");
                     return;
             }
 
+            //If the role is Customer, create a real Customer object
+            object userObject = null;
+
+            if (role == UserRole.Customer)
+            {
+                userObject = new Customer(); //Customer will hold accounts, loans, etc.
+            }
+
             var newUser = new Dictionary<string, object>()
-        {
-            {"Username", username},
-            {"Password", password},
-            {"Role", role},
-            {"Status", UserStatus.Active},
-            {"FailedAttempts", 0}
-        };
+            {
+                {"Username", username},
+                {"Password", password},
+                {"Role", role},
+                {"Status", UserStatus.Active},
+                {"FailedAttempts", 0},
+                {"UserObject", userObject} //Store the object (Customer or null)
+            };
 
             UsersList.Add(newUser);
-            Console.WriteLine($" User '{username}' Created as {role}.");
+            Console.WriteLine($"User '{username}' Created as {role}.");
         }
+
 
         // -------------------------------------------------------
         // Login

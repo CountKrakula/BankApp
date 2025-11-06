@@ -32,13 +32,26 @@ namespace BankApp
         {
             Console.Write("Choose currency (SEK/EUR/USD): ");
             string curr = Console.ReadLine()?.Trim().ToUpper();
-            if (string.IsNullOrWhiteSpace(curr)) curr = "SEK";
+
+            // List of allowed currencies
+            string[] validCurrencies = { "SEK", "EUR", "USD" };
+
+            // Check if the input is valid
+            if (!validCurrencies.Contains(curr))
+            {
+                Console.WriteLine("Invalid currency. Defaulting to SEK.");
+                curr = "SEK";
+            }
 
             var newAccount = new Account(currency: curr, initialBalance: 0m);
-            Accounts.Add(newAccount); // Add the new account to the customer's account list
+            Accounts.Add(newAccount);
 
-            Console.WriteLine($"Account created! Number: {newAccount.AccountNumber} | Currency: {newAccount.Currency} | Balance: {newAccount.Balance}");
+            Console.WriteLine($"Account created!");
+            Console.WriteLine($"Bankgiro: {newAccount.AccountNumber}");
+            Console.WriteLine($"Currency: {newAccount.Currency}");
+            Console.WriteLine($"Balance:  {newAccount.Balance}");
         }
+
 
         public void WithdrawFunds(string accountNumber, decimal amount)
         {
@@ -176,9 +189,7 @@ namespace BankApp
                 {
                     Console.WriteLine($"Account {accountNumber} not found. Please try again.");
                 }
-
             }
-
         }
 
         public void TransactionHistory()

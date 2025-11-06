@@ -78,7 +78,7 @@ namespace BankApp
         // ----------------------------------------------------------
         static void ShowCustomerMenu(Dictionary<string, object> user)
         {
-            Customer cust = new Customer();
+            Customer cust = (Customer)user["UserObject"];
             bool loggedIn = true;
 
             while (loggedIn)
@@ -89,8 +89,9 @@ namespace BankApp
                 Console.WriteLine("2. Deposit Funds");
                 Console.WriteLine("3. Withdraw Funds");
                 Console.WriteLine("4. List Accounts");
-                Console.WriteLine("5.Create Loan");
-                Console.WriteLine("6. Logout");
+                Console.WriteLine("5. Create Loan");
+                Console.WriteLine("6. Transfer");
+                Console.WriteLine("7. Logout");
                 Console.Write("Choose: ");
 
                 switch (Console.ReadLine())
@@ -132,7 +133,60 @@ namespace BankApp
                         Loan newloan = new Loan(loanId, user["Username"].ToString(), principalAmount, interestRate, StartDate, DueDate);
                         Console.WriteLine($"Loan created! Outstanding amount: {newloan.OutstandingAmount}");
                         break;
+                    //-----------------
+                    //Transfer balance
+                    //-----------------
                     case "6":
+                        Console.WriteLine("Transfer Options:");
+                        Console.WriteLine("1. Transfer between your own accounts");
+                        Console.WriteLine("2. Transfer to another customer");
+                        Console.Write("Choose: ");
+
+                        string transferChoice = Console.ReadLine();
+
+                        switch (transferChoice)
+                        {
+                            //---------------------
+                            //Transfer own accounts
+                            //---------------------
+                            case "1":
+                                Console.Write("Amount: ");
+                                if (decimal.TryParse(Console.ReadLine(), out decimal ownAmount))
+                                    cust.TransferBetweenOwnAccounts(ownAmount);
+                                else
+                                    Console.WriteLine("Invalid amount.");
+                                break;
+                            //-----------------
+                            //Transfer to user
+                            //-----------------
+                            case "2":
+                                Console.Write("Target customer's username: ");
+                                string targetUsername = Console.ReadLine();
+
+                                var targetUser = Admin.UsersList.Find(u =>
+                                    (string)u["Username"] == targetUsername);
+
+                                if (targetUser == null || targetUser["Role"].ToString() != "Customer")
+                                {
+                                    Console.WriteLine("Customer not found.");
+                                    break;
+                                }
+
+                                Customer targetCustomer = (Customer)targetUser["CustomerObject"];
+
+                                Console.Write("Amount: ");
+                                if (decimal.TryParse(Console.ReadLine(), out decimal sendAmount))
+                                    cust.TransferToOtherCustomer(targetCustomer, sendAmount);
+                                else
+                                    Console.WriteLine("Invalid amount.");
+                                break;
+
+                            default:
+                                Console.WriteLine("Invalid choice.");
+                                break;
+                        }
+                        break;
+                    case "7":
                         loggedIn = false;
                         break;
                     default:
