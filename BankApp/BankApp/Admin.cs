@@ -9,7 +9,7 @@ namespace BankApp
 {
     public class Admin
     {
-        public string AdminID { get; set; } // Unique identifier for the admin
+        
         public string Name { get; set; } // Admin's full name
 
         public enum UserRole { Customer, Admin, SystemOwner }
