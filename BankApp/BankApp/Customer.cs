@@ -13,10 +13,6 @@ namespace BankApp
         // CurrencyRates holds all defined currency exchange rates.
         public static List<CurrencyRate> CurrencyRates = new List<CurrencyRate>();
         public string Name { get; set; } // Customer's full name    
-        public string CustomerID { get; set; } // Unique identifier for the customer
-
-        public string Email { get; set; } // Contact email
-
         public List<Account> Accounts { get; set; } = new List<Account>(); // List of customer's bank accounts
 
         public List<Loan> Loans { get; set; } = new List<Loan>(); // List of customer's loans
@@ -24,7 +20,9 @@ namespace BankApp
 
 
 
-
+        //---------------
+        //Create (Regular) Account
+        //---------------
         public void CreateAccount()
         {
             Console.Write("Choose currency (SEK/EUR/USD): ");
@@ -44,6 +42,23 @@ namespace BankApp
             Accounts.Add(newAccount);
 
             Console.WriteLine($"Account created!");
+            Console.WriteLine($"Bankgiro: {newAccount.AccountNumber}");
+            Console.WriteLine($"Currency: {newAccount.Currency}");
+            Console.WriteLine($"Balance:  {newAccount.Balance}");
+        }
+
+        //---------------
+        //Create Savings Account
+        //---------------
+
+        public void CreateSavingsAccount()
+        {
+            
+            SavingsAccount newAccount = new SavingsAccount();
+            newAccount.ApplyInterest(); // This applies interest from SavingsAccount class
+            Accounts.Add(newAccount);
+
+            Console.WriteLine($"Saving Account created!");
             Console.WriteLine($"Bankgiro: {newAccount.AccountNumber}");
             Console.WriteLine($"Currency: {newAccount.Currency}");
             Console.WriteLine($"Balance:  {newAccount.Balance}");

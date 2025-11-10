@@ -123,17 +123,17 @@ namespace BankApp
                             Console.Clear();
                             Console.WriteLine("=== Create Loan ===");
 
-                            // 1) Belopp
+                            //  Amount
                             decimal principalAmount;
                             while (true)
                             {
                                 Console.Write("Amount to loan: ");
                                 if (decimal.TryParse(Console.ReadLine(), out principalAmount) && principalAmount > 0)
                                     break;
-                                Console.WriteLine("Ogiltigt belopp, försök igen.");
+                                Console.WriteLine("Invalid input");
                             }
 
-                            // 2) Låneperiod (1/2/3 år) – bara ett knapptryck
+                            // Loan time (1/2/3 years)
                             int termYears = 0;
                             while (true)
                             {
@@ -144,10 +144,10 @@ namespace BankApp
                                     termYears = int.Parse(termInput);
                                     break;
                                 }
-                                Console.WriteLine("Ogiltigt val, ange 1, 2 eller 3.");
+                                Console.WriteLine("Invalid input, choose 1, 2 or 3.");
                             }
 
-                            // 3) Skapa lån – ränta + förfallodatum sätts automatiskt
+                            // Creates loan – rent + Due date sets automaticly
                             DateTime startDate = DateTime.Now;
                             Loan newLoan = new Loan(principalAmount, termYears, startDate);
 
